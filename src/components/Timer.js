@@ -4,26 +4,59 @@ import IconStop from './IconStop'
 
 import './timer.css'
 
-export default function Timer() {
-  const [timerState, setTimerState] = React.useState('stopped')
-  const [counter, setCounter] = React.useState(0)
+function useInterval(cb, delay) {
+  const [state, setState] = React.useState(false)
+  const savedCallback = React.useRef()
 
-  const start = () => setTimerState('started')
-
-  const pause = () => setTimerState('paused')
-
-  const stop = () => {
-    setTimerState('stopped')
-    setCounter(0)
-  }
+  const start = () => setState(true)
+  const pause = () => setState(false)
 
   React.useEffect(() => {
-    if (timerState === 'started') {
-      setTimeout(() => {
-        setCounter(counter + 1)
-      }, 1000)
+    savedCallback.current = cb
+  }, [cb])
+
+  React.useEffect(() => {
+    const tick = () => savedCallback.current()
+    if (delay !== null && delay !== undefined && state) {
+      tick()
+      const timer = setInterval(tick, delay)
+      return () => clearInterval(timer)
     }
-  }, [counter, timerState])
+  }, [delay, state])
+
+  return { start, pause }
+}
+
+function useTimer() {
+  const [timerState, setTimerState] = React.useState('stopped')
+  const [value, setValue] = React.useState(0)
+
+  const { start: startInterval, pause: pauseInterval } = useInterval(() => {
+    setValue(value + 1)
+    setTimerState('started')
+  }, 1000)
+
+  const start = () => {
+    setTimerState('started')
+    startInterval()
+  }
+
+  const pause = () => {
+    setTimerState('paused')
+    pauseInterval()
+  }
+
+  const stop = () => {
+    pause()
+    setValue(0)
+    setTimerState('stopped')
+  }
+
+  return { start, pause, stop, value, timerState }
+}
+
+export default function Timer() {
+  const { start, pause, stop, value, timerState } = useTimer()
 
   return (
     <div className="timer">
@@ -32,19 +65,26 @@ export default function Timer() {
           'timer__counter' + (timerState === 'paused' ? ' blinking' : '')
         }
       >
-        {counter}
+        {value}
       </h1>
 
       <div className="timer__buttons">
-        <button type="button" onClick={start} className="timer__button">
-          ▶
-        </button>
-        <button type="button" onClick={pause} className="timer__button">
-          <IconPause />
-        </button>
-        <button type="button" onClick={stop} className="timer__button">
-          <IconStop />
-        </button>
+        {(timerState === 'paused' || timerState === 'stopped') && (
+          <button type="button" onClick={start} className="timer__button">
+            ▶
+          </button>
+        )}
+        {timerState === 'started' && (
+          <button type="button" onClick={pause} className="timer__button">
+            <IconPause />
+          </button>
+        )}
+
+        {(timerState === 'started' || timerState === 'paused') && (
+          <button type="button" onClick={stop} className="timer__button">
+            <IconStop />
+          </button>
+        )}
       </div>
     </div>
   )
