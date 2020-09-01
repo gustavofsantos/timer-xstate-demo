@@ -1,0 +1,58 @@
+.timer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 400px;
+}
+
+.timer__counter {
+  color: var(--text-color);
+  font-weight: 700;
+  font-size: 60px;
+}
+
+.timer__buttons {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding-left: 40px;
+}
+
+.timer__button {
+  width: 48px;
+  height: 48px;
+  border: 2px solid var(--text-color);
+  background: var(--app-background);
+  box-shadow: 4px 4px 0 var(--text-color);
+  color: var(--text-color);
+  margin-right: 20px;
+  cursor: pointer;
+  outline: none;
+  transition: all 300ms ease;
+}
+
+.timer__button:last-of-type {
+  margin-right: 0;
+}
+
+.timer__button:hover {
+  transition: all 100ms ease;
+  box-shadow: 2px 2px 0 var(--text-color);
+}
+
+.blinking {
+  animation: blink 0.9s linear infinite both;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.2;
+  }
+  100% {
+    opacity: 1;
+  }
+}
