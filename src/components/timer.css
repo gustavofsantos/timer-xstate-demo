@@ -7,9 +7,11 @@
 }
 
 .timer__counter {
+  text-align: left;
   color: var(--text-color);
   font-weight: 700;
   font-size: 60px;
+  width: 160px;
 }
 
 .timer__buttons {

@@ -5,6 +5,7 @@ import IconStop from './IconStop'
 import { createTimerMachine } from '../machines/timer-machine'
 
 import './timer.css'
+import { formatTime } from '../utils'
 
 function useTimer() {
   const [current, send] = useMachine(createTimerMachine())
@@ -23,12 +24,8 @@ export default function Timer() {
 
   return (
     <div className="timer">
-      <h1
-        className={
-          'timer__counter' + (state.matches('paused') ? ' blinking' : '')
-        }
-      >
-        {value}
+      <h1 className={'timer__counter' + (state.matches('paused') ? ' blinking' : '')}>
+        {formatTime(value)}
       </h1>
 
       <div className="timer__buttons">
