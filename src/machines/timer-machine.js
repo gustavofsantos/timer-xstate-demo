@@ -1,6 +1,14 @@
 import { Machine, assign } from 'xstate'
 
-export const createTimerMachine = () =>
+const defaultConfig = {
+  meta: {
+    started: {},
+    stopped: {},
+    paused: {}
+  }
+}
+
+export const createTimerMachine = (config = defaultConfig) =>
   Machine({
     id: 'timer-machine',
     context: {
@@ -12,7 +20,8 @@ export const createTimerMachine = () =>
         entry: assign({ value: 0 }),
         on: {
           START: 'started'
-        }
+        },
+        meta: { ...config.meta.stopped }
       },
       started: {
         invoke: {
@@ -27,13 +36,15 @@ export const createTimerMachine = () =>
           },
           PAUSE: 'paused',
           STOP: 'stopped'
-        }
+        },
+        meta: { ...config.meta.started }
       },
       paused: {
         on: {
           START: 'started',
           STOP: 'stopped'
-        }
+        },
+        meta: { ...config.meta.paused }
       }
     }
   })

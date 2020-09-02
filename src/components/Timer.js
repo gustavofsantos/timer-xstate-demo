@@ -30,18 +30,18 @@ export default function Timer() {
 
       <div className="timer__buttons">
         {(state.matches('paused') || state.matches('stopped')) && (
-          <button type="button" onClick={start} className="timer__button">
+          <button type="button" onClick={start} className="timer__button" title="Start">
             ▶
           </button>
         )}
         {state.matches('started') && (
-          <button type="button" onClick={pause} className="timer__button">
+          <button type="button" onClick={pause} className="timer__button" title="Pause">
             <IconPause />
           </button>
         )}
 
         {(state.matches('started') || state.matches('paused')) && (
-          <button type="button" onClick={stop} className="timer__button">
+          <button type="button" onClick={stop} className="timer__button" title="Stop">
             <IconStop />
           </button>
         )}
