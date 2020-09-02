@@ -15,14 +15,14 @@ const timerMachine = createTimerMachine({
       }
     },
     started: {
-      test: async () => {
+      test: () => {
         expect(screen.getByTitle(/pause/i)).toBeInTheDocument()
         expect(screen.getByTitle(/stop/i)).toBeInTheDocument()
         expect(screen.getByText(/\d\d:\d\d/)).toBeInTheDocument()
       }
     },
     paused: {
-      test: async () => {
+      test: () => {
         expect(screen.getByTitle(/start/i)).toBeInTheDocument()
         expect(screen.getByTitle(/stop/i)).toBeInTheDocument()
         expect(screen.getByText(/\d\d:\d\d/)).toBeInTheDocument()
@@ -39,7 +39,7 @@ const timerModel = createModel(timerMachine).withEvents({
     user.click(screen.getByTitle(/pause/i))
   },
   STOP: () => {
-    user.click(screen.getByTitle(/pause/i))
+    user.click(screen.getByTitle(/stop/i))
   }
 })
 
@@ -53,7 +53,7 @@ describe('Timer model tests', () => {
       plan.paths.forEach((path) => {
         test(path.description, async () => {
           render(<Timer />)
-          await path.test()
+          path.test()
         })
       })
     })
