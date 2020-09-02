@@ -18,6 +18,7 @@ module.exports = {
   },
   plugins: ['react', 'jest'],
   rules: {
-    'space-before-function-paren': 'off'
+    'space-before-function-paren': 'off',
+    'standard/no-callback-literal': 'off'
   }
 }
