@@ -25,8 +25,8 @@ export const createTimerMachine = (config = defaultConfig) =>
       },
       started: {
         invoke: {
-          src: (ctx) => (cb) => {
-            const interval = setInterval(() => cb('TICK'), 1000)
+          src: (ctx) => (send) => {
+            const interval = setInterval(() => send('TICK'), 1000)
             return () => clearInterval(interval)
           }
         },
