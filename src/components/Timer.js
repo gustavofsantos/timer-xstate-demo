@@ -3,9 +3,9 @@ import { useMachine } from '@xstate/react'
 import IconPause from './IconPause'
 import IconStop from './IconStop'
 import { createTimerMachine } from '../machines/timer-machine'
+import { formatTime } from '../utils'
 
 import './timer.css'
-import { formatTime } from '../utils'
 
 function useTimer() {
   const [current, send] = useMachine(createTimerMachine())
