@@ -1,46 +1,83 @@
 import React from 'react'
-import { useMachine } from '@xstate/react'
 import IconPause from './IconPause'
 import IconStop from './IconStop'
-import { createTimerMachine } from '../machines/timer-machine'
-
-import './timer.css'
 import { formatTime } from '../utils'
 
+import './timer.css'
+
+function useInterval(cb, delay) {
+  const [state, setState] = React.useState(false)
+  const savedCallback = React.useRef()
+
+  const start = () => setState(true)
+  const pause = () => setState(false)
+
+  React.useEffect(() => {
+    savedCallback.current = cb
+  }, [cb])
+
+  React.useEffect(() => {
+    const tick = () => savedCallback.current()
+    if (delay !== null && delay !== undefined && state) {
+      tick()
+      const timer = setInterval(tick, delay)
+      return () => clearInterval(timer)
+    }
+  }, [delay, state])
+
+  return { start, pause }
+}
+
 function useTimer() {
-  const [current, send] = useMachine(createTimerMachine())
+  const [timerState, setTimerState] = React.useState('stopped')
+  const [value, setValue] = React.useState(0)
 
-  const value = current.context.value
+  const { start: startInterval, pause: pauseInterval } = useInterval(() => {
+    setValue(value + 1)
+    setTimerState('started')
+  }, 1000)
 
-  const start = () => send('START')
-  const pause = () => send('PAUSE')
-  const stop = () => send('STOP')
+  const start = () => {
+    setTimerState('started')
+    startInterval()
+  }
 
-  return { start, pause, stop, state: current, value }
+  const pause = () => {
+    setTimerState('paused')
+    pauseInterval()
+  }
+
+  const stop = () => {
+    pause()
+    setValue(0)
+    setTimerState('stopped')
+  }
+
+  return { start, pause, stop, value, timerState }
 }
 
 export default function Timer() {
-  const { start, pause, stop, state, value } = useTimer()
+  const { start, pause, stop, value, timerState } = useTimer()
 
   return (
     <div className="timer">
-      <h1 className={'timer__counter' + (state.matches('paused') ? ' blinking' : '')}>
+      <h1 className={'timer__counter' + (timerState === 'paused' ? ' blinking' : '')}>
         {formatTime(value)}
       </h1>
 
       <div className="timer__buttons">
-        {(state.matches('paused') || state.matches('stopped')) && (
+        {(timerState === 'paused' || timerState === 'stopped') && (
           <button type="button" onClick={start} className="timer__button" title="Start">
             ▶
           </button>
         )}
-        {state.matches('started') && (
+        {timerState === 'started' && (
           <button type="button" onClick={pause} className="timer__button" title="Pause">
             <IconPause />
           </button>
         )}
 
-        {(state.matches('started') || state.matches('paused')) && (
+        {(timerState === 'started' || timerState === 'paused') && (
           <button type="button" onClick={stop} className="timer__button" title="Stop">
             <IconStop />
           </button>
